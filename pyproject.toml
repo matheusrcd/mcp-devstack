@@ -1,0 +1,41 @@
+[project]
+name = "devstack-mcp"
+version = "0.1.0"
+description = "An MCP server that exposes AWS (and later Datadog) tools to LLM agents for incident analysis and runbook execution."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Matheus Ricardo Tomas" }]
+
+# Why these deps?
+#   mcp[cli]   — official MCP Python SDK, includes FastMCP + the `mcp` CLI for local testing.
+#   boto3      — AWS SDK; the only thing we need to talk to DynamoDB (and later Athena/SQS).
+#   pydantic   — input validation for every tool. FastMCP turns our Pydantic models into JSON schema.
+#   python-dotenv — loads `.env` so you don't have to export vars manually in dev.
+dependencies = [
+    "mcp[cli]>=1.2.0",
+    "boto3>=1.34.0",
+    "pydantic>=2.6.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.5.0",
+    "pytest>=8.0.0",
+]
+
+# Lets you run `python -m devstack_mcp` AND `devstack-mcp` from the shell once installed.
+[project.scripts]
+devstack-mcp = "devstack_mcp.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/devstack_mcp"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
